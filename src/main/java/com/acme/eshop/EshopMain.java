@@ -51,60 +51,69 @@ public class EshopMain {
         eshop.createOrder();
 
         //**********Menu Shopping List*********************
-        Scanner input = new Scanner(System.in);
-        ShoppingList myList = new ShoppingList();
-        int userOpt = 0;
-        while (userOpt != 10) {
-            System.out.println("");
-            System.out.println("--------------------------------");
-            System.out.println("------- Menu Shopping List------");
-            System.out.println("(1) Add a Product to the list. ");
-            System.out.println("(2) Display My Basket and total number of items. ");
-            System.out.println("(3) Remove a Product from My Basket.");
-            System.out.println("(4) Customer Checkout and Pay.");
-            System.out.println("(5) Admin eshop Show Orders.");
-            System.out.println("(6) Admin ShowOrderReport 1.");
-            System.out.println("(7) Admin ShowOrderReport 2.");
-            System.out.println("(8) Admin ShowOrderReport 3.");
-            System.out.println("(9) Admin ShowOrderReport 4.");
-            System.out.println("(10) Exit.");
-            System.out.println("--------------------------------");
-            userOpt = input.nextInt();
 
-            if (userOpt == 1) {
-                myList.addItem();
-            }
+        try {
+            Scanner input = new Scanner(System.in);
 
-            if (userOpt == 2) {
-                myList.displayItem();
-            }
-            if (userOpt == 3) {
-                myList.removeItem();
-            }
-            if (userOpt == 4) {
-                getPay(eshop, myList);
-            }
-            if (userOpt == 5) {
-                ShowOrder(eshop);
-            }
-            if (userOpt == 6) {
-                ShowOrderReport(eshop);
-            }
-            if (userOpt == 7) {
-                ShowOrderReportSec(eshop);
-            }
-            if (userOpt == 8) {
-               ShowOrderReportThird(eshop);
-            }
-            if (userOpt == 9) {
-               ShowOrderReportF(eshop);
-            }
 
-            if (userOpt == 10) {
-                eshop.stopH2Server();
-            }
+            ShoppingList myList = new ShoppingList();
+            int userOpt = 0;
+            while (userOpt != 10) {
+                System.out.println("");
+                System.out.println("--------------------------------");
+                System.out.println("------- Menu Shopping List------");
+                System.out.println("(1) Add a Product to the list. ");
+                System.out.println("(2) Display My Basket and total number of items. ");
+                System.out.println("(3) Remove a Product from My Basket.");
+                System.out.println("(4) Customer Checkout and Pay.");
+                System.out.println("(5) Admin eshop Show Orders.");
+                System.out.println("(6) Admin ShowOrderReport 1.");
+                System.out.println("(7) Admin ShowOrderReport 2.");
+                System.out.println("(8) Admin ShowOrderReport 3.");
+                System.out.println("(9) Admin ShowOrderReport 4.");
+                System.out.println("(10) Exit.");
+                System.out.println("--------------------------------");
 
+                userOpt = input.nextInt();
+
+                if (userOpt == 1) {
+                    myList.addItem();
+                }
+
+                if (userOpt == 2) {
+                    myList.displayItem();
+                }
+                if (userOpt == 3) {
+                    myList.removeItem();
+                }
+                if (userOpt == 4) {
+                    getPay(eshop, myList);
+                }
+                if (userOpt == 5) {
+                    ShowOrder(eshop);
+                }
+                if (userOpt == 6) {
+                    ShowOrderReport(eshop);
+                }
+                if (userOpt == 7) {
+                    ShowOrderReportSec(eshop);
+                }
+                if (userOpt == 8) {
+                    ShowOrderReportThird(eshop);
+                }
+                if (userOpt == 9) {
+                    ShowOrderReportF(eshop);
+                }
+                if (userOpt == 10) {
+                    eshop.stopH2Server();
+                }
+
+            }
         }
+        catch (InputMismatchException e) {
+            loggerAng.info("Not a valid number");
+        }
+
 
 
         // Stop H2 database server via shutdown hook
@@ -313,40 +322,28 @@ public class EshopMain {
              List<String> ProdBasketList = new ArrayList<String>();
             SelectProductExist(ProdList);
 
-        System.out.println("Are all the contents equal? "
-                + ProdList.containsAll(ProdBasketList));
-
 
        for (int i = 0; i < myList.list.stream().count(); i++) { ProdBasketList.add(myList.displayItemName(i));}
             boolean found = false;
                for(String title: ProdBasketList) {
-                    System.out.println("Gia na dw Basket"+ title);
+                 //   System.out.println("Gia na dw Basket"+ title);
                     for (String model : ProdList) {
-                        System.out.println("Gia na dw Database"+ model);
+                      //  System.out.println("Gia na dw Database"+ model);
                         if (title.toUpperCase().equals(model.toUpperCase())) {
-                            //System.out.println("aaa");
                             found = true;
-                          //  x=0;
+
                            break;
                         } else {
                             found = false;
-                            //System.out.println("bbb");
-                        //    x=1;
-                            //break;
                         }
 
 
                     }
                    if (!found) {
-                      // System.out.println(y);
-                      // y+=x;
-                      // System.out.println(y);
                        break;
                    }
                 }
-        //System.out.println("Teliko y="+y);
-       // System.out.println("Teliko x="+x);
-       // System.out.println("Teliko found="+found);
+
                 return found;
     }
 
@@ -583,121 +580,4 @@ public class EshopMain {
 
 
 
- /* private void generateCustomerData (PreparedStatement prStatement, int HowMany) throws SQLException {
-        CustomerCategoryEnum result = null;
-        for (int i=0; i<HowMany; i++) {
-
-            prStatement.clearParameters();
-            prStatement.setLong(1, 1 + i);
-            prStatement.setString(2, generator.getFirstName());
-            prStatement.setString(3, generator.getLastName());
-            prStatement.setString(4, generator.getCity());
-            prStatement.setString(5, generator.getEmail());
-            prStatement.setString(6, result.ask().toString());
-
-            prStatement.addBatch();
-
-
-        }
-    }
-    private void insertListOfCustomers() {
-        try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Customer"))) {
-            generateCustomerData(prStatement,5);
-            int[] resultRows =prStatement.executeBatch();
-            loggerAng.info("Insert statement of Customer returned {}" , Arrays.stream(resultRows).sum());
-
-        } catch (SQLException throwables) {
-            loggerAng.error("Error occurred while inserting customer list",throwables);
-            exit(-1);
-        }
-    }
-    private void SelectListOfCustomer() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
-             ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.Customer")) )
-        {
-            while (rs.next())
-            {
-                loggerAng.info("ID: {} LastName: {}. Name: {}. Email: {}. City:{}  Category:{} ",
-                        rs.getLong("id"), rs.getString("LastName"),rs.getString("Name"),rs.getString("Email")
-                        ,rs.getString("City"),rs.getString("CustomerCategory"));
-                //  System.out.println();
-            }
-
-        } catch (SQLException throwables) {
-            loggerAng.error("Error occurred while selecting data",throwables);
-            exit(-1);
-        }
-
-    }
-*/
-
-  /*
-    private double SelectPricePr(Integer ProductID) {
-        double Price=0.0;
-        String query ="Select Price from Products where ID=? ";
-        try{
-            PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(query);
-
-            prStatement.setInt(1,ProductID);
-            ResultSet rs=  prStatement.executeQuery();
-            while (rs.next())
-            {
-                Price =rs.getDouble("Price");
-                loggerAng.info("Price: {}", Price);
-            }
-
-        } catch (SQLException throwables) {
-            loggerAng.error("Error occurred while selecting Product Price ",throwables);
-            exit(-1);
-        }
-            return Price;
-    }
-    private void insertOrder(Integer CusID,Integer quantity ) {
-        try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Order"))) {
-
-            int[] integerProduct = {1, 5};
-
-            // Classic for loop
-            for (int i = 0; i < integerProduct.length; i++) {
-                System.out.println(i + 1 + ". " + integerProduct[i]);
-
-
-            double test =SelectPricePr(integerProduct[i]);
-            double test2=test*quantity;
-            loggerAng.info("totlaPrice: {}", test2);
-                prStatement.clearParameters();
-            prStatement.setLong(1,1+i);
-            prStatement.setInt(2,integerProduct[i]);
-            prStatement.setInt(3,CusID);
-            prStatement.setInt(4,quantity);
-            prStatement.setDouble(5,test2);
-            prStatement.addBatch();
-
-                prStatement.executeBatch();
-            }
-           // int[] resultRows =prStatement.executeBatch();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            System.err.println("Error occurred while inserting data");
-        }
-
-    }
-    private void SelectListOfOrders() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
-             ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.Orders")) )
-        {
-            while (rs.next())
-            {
-                loggerAng.info("ID: {}  ",rs.getLong("id"));
-                //  System.out.println();
-            }
-
-        } catch (SQLException throwables) {
-            loggerAng.error("Error occurred while selecting data",throwables);
-            exit(-1);
-        }
-
-    }
-
-    */
 }
