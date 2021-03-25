@@ -14,11 +14,23 @@ public class Customer {
     private String CustomerLatName;
     private String CustomerCategory;
     private Integer DiscountCategory;
+    private String CustomerKindOfPay;
+    public String getCustomerKindOfPay() {
+        return CustomerKindOfPay;
+    }
 
-    public Customer(String name, String lastname, String CusCateg) {
+    public void setCustomerKindOfPay(String customerKindOfPay) {
+        CustomerKindOfPay = customerKindOfPay;
+    }
+
+
+
+    public Customer(String name, String lastname, String CusCateg, String Kindofpay) {
         this.CustomerName=name;
         this.CustomerLatName=lastname;
         this.CustomerCategory=CusCateg;
+
+        this.CustomerKindOfPay=Kindofpay;
         this.DiscountCategory=getDiscount();
     }
 
@@ -41,11 +53,16 @@ public class Customer {
 
     public Integer getDiscount() {
         Integer Discount=0;
-        if (CustomerCategory.equals("B2C")){Discount=1;}
-        else  if (CustomerCategory.equals("B2B")){Discount=2;}
-        else if (CustomerCategory.equals("B2G")){Discount=3;}
+        if (CustomerCategory.equals("B2C")){Discount=0;}
+        else  if (CustomerCategory.equals("B2B")){Discount=20;}
+        else if (CustomerCategory.equals("B2G")){Discount=50;}
            else {Discount=0;}
-
+        System.out.println(CustomerKindOfPay);
+           if (CustomerKindOfPay.equals("Cash"))
+           {Discount=Discount+10;}
+           else    {Discount=Discount+15;}
+      //  System.out.println("fgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfg");
+      //  System.out.println(Discount);
         return Discount;
     }
     public Integer getDiscountCategory() {

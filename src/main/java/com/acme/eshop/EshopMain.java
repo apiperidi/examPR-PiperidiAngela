@@ -275,7 +275,7 @@ public class EshopMain {
     private void pay(ShoppingList myList )  {
             if (!myList.list.isEmpty())
            {
-               Customer person1 = new Customer("Angela","Piperidi", CustomerCategoryEnum.ask().toString());
+               Customer person1 = new Customer("Angela","Piperidi", CustomerCategoryEnum.ask().toString(),"Cash");
                InsertCustomer(person1);
                try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Order")))
                {
@@ -340,15 +340,14 @@ public class EshopMain {
              ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.Orders")) )
         {
 
-            if(rs.next()) {
-
                 while (rs.next()) {
 
                     loggerAng.info("Customer Name: {} {} Customer Category: {}. " +
                                     "Customer Discount By Category : {}. " +
                                     "Product Description: {}. " +
                                     "Product Quantity: {}. " +
-                                    "Product DiscountPrice:{} € "
+                                    "Product Price Before Discount:{} € " +
+                                    "Product Price After Discount:{} € "
                             ,
                             rs.getString("LastName"),
                             rs.getString("Name"),
@@ -356,12 +355,11 @@ public class EshopMain {
                             rs.getDouble("CustomerDiscount"),
                             rs.getString("ProductDesc"),
                             rs.getInt("Quantity"),
+                            rs.getDouble("TotalPrice"),
                             rs.getDouble("DiscountPrice"));
                     //  System.out.println();
                 }
-            }
-            else
-                loggerAng.error("Please Go back to the menu, your order is not ready");
+
 
 
         } catch (SQLException throwables) {
