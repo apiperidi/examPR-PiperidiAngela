@@ -57,7 +57,7 @@ public class Customer {
         else  if (CustomerCategory.equals("B2B")){Discount=20;}
         else if (CustomerCategory.equals("B2G")){Discount=50;}
            else {Discount=0;}
-        System.out.println(CustomerKindOfPay);
+      //  System.out.println(CustomerKindOfPay);
            if (CustomerKindOfPay.equals("Cash"))
            {Discount=Discount+10;}
            else    {Discount=Discount+15;}

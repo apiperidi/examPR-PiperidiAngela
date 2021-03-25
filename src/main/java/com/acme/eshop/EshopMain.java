@@ -124,8 +124,8 @@ public class EshopMain {
         config.setUsername(DB_USERNAME);
         config.setPassword(DB_PASSWORD);
 
-        config.setConnectionTimeout(100000);
-        config.setIdleTimeout(60000);
+        config.setConnectionTimeout(5000);
+        config.setIdleTimeout(10000);
         config.setMaxLifetime(1800000);
         config.setMinimumIdle(1);
         config.setMaximumPoolSize(10);
