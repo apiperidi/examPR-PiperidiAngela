@@ -124,15 +124,15 @@ public class EshopMain {
         config.setUsername(DB_USERNAME);
         config.setPassword(DB_PASSWORD);
 
-        config.setConnectionTimeout(20000);
+        config.setConnectionTimeout(100000);
         config.setIdleTimeout(60000);
         config.setMaxLifetime(1800000);
         config.setMinimumIdle(1);
-        config.setMaxLifetime(15);
+        config.setMaximumPoolSize(10);
         config.setAutoCommit(true);
 
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtsCacheSize", "500");
+       config.addDataSourceProperty("cachePrepStmts", "true");
+       config.addDataSourceProperty("prepStmtsCacheSize", "500");
         hikariDatasource = new HikariDataSource(config);
     }
 
@@ -275,7 +275,9 @@ public class EshopMain {
     private void pay(ShoppingList myList )  {
             if (!myList.list.isEmpty())
            {
-               Customer person1 = new Customer("Angela","Piperidi", CustomerCategoryEnum.ask().toString(),"Cash");
+              String Name= generator.getFirstName();
+               String LastName= generator.getLastName();
+               Customer person1 = new Customer(Name,LastName, CustomerCategoryEnum.ask().toString(),"Cash");
                InsertCustomer(person1);
                try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Order")))
                {
@@ -283,7 +285,7 @@ public class EshopMain {
 
                        Double dDiscountPrice=(myList.displayTotalPrice(i)* person1.getDiscount())/100;
 
-                       prStatement.setLong(1,i);
+                       prStatement.setLong(1,ThreadLocalRandom.current().nextInt(1,300));
                        prStatement.setString(2,myList.displayItemName(i));
                        prStatement.setString(3,person1.getCustomerLatName());
                        prStatement.setInt(4,myList.displayQuantity(i));
@@ -295,7 +297,7 @@ public class EshopMain {
                    }
                    int[] resultRows =prStatement.executeBatch();
                    loggerAng.info("Insert statement of Order returned {}" , Arrays.stream(resultRows).sum());
-
+                   myList.clearList();
                }
                catch (SQLException throwables) {
                    loggerAng.error("Error occurred while inserting Order",throwables);
@@ -311,7 +313,7 @@ public class EshopMain {
     public void insertListOfCustomer(Customer person1) {
         try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Customer"))) {
 
-            prStatement.setLong(1,1);
+            prStatement.setLong(1,ThreadLocalRandom.current().nextInt(1,300));
             prStatement.setString(2,person1.getCustomerName());
             prStatement.setString(3,person1.getCustomerLatName());
             prStatement.setInt(4,person1.getDiscountCategory());

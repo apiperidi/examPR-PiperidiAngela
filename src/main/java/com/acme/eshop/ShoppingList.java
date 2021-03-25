@@ -12,7 +12,11 @@ public class ShoppingList {
 
     List<ShoppingItem> list = new ArrayList<ShoppingItem>();
 
+    public void clearList(){
+        list.clear();
+    }
     //Add a new ShoppingItem to the list
+
     public void addItem()
     {
         System.out.println();
