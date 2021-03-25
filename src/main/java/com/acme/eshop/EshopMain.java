@@ -206,7 +206,7 @@ public class EshopMain {
 
     //**********Products*********************
     private void createProducts() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement()) {
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement()) {
             int resultRows = statement.executeUpdate(sqlCommands.getProperty("create.table.Products"));
 
             loggerAng.info("Create statement Product returned {}" , resultRows);
@@ -234,7 +234,7 @@ public class EshopMain {
         }
     }
     private void insertListOfProducts() {
-        try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Products"))) {
+        try (Connection connection = hikariDatasource.getConnection();PreparedStatement prStatement = connection.prepareStatement(sqlCommands.getProperty("insert.table.Products"))) {
             generateData(prStatement,10);
             int[] resultRows =prStatement.executeBatch();
             loggerAng.info("Insert statement of Product returned {}" , Arrays.stream(resultRows).sum());
@@ -245,7 +245,7 @@ public class EshopMain {
         }
     }
     private void SelectListOfProducts() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement();
              ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.Products")) )
         {
             while (rs.next())
@@ -263,7 +263,7 @@ public class EshopMain {
 
     //**********Create Tables Customer And Order *********************
     private void createCustomer() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement()) {
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement()) {
             int resultRows = statement.executeUpdate(sqlCommands.getProperty("create.table.Customer"));
 
             loggerAng.info("Create statement Customer returned {}" , resultRows);
@@ -274,7 +274,7 @@ public class EshopMain {
         }
     }
     private void createOrder() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement()) {
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement()) {
             int resultRows = statement.executeUpdate(sqlCommands.getProperty("create.table.Order"));
 
             loggerAng.info("Create statement Order returned {}" , resultRows);
@@ -297,7 +297,7 @@ public class EshopMain {
                String LastName= generator.getLastName();
                Customer person1 = new Customer(Name,LastName, CustomerCategoryEnum.ask().toString(),"Cash");
                InsertCustomer(person1);
-               try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Order")))
+               try (Connection connection = hikariDatasource.getConnection();PreparedStatement prStatement = connection.prepareStatement(sqlCommands.getProperty("insert.table.Order")))
                {
                    for (int i = 0; i < myList.list.stream().count(); i++) {
 
@@ -329,7 +329,7 @@ public class EshopMain {
         insertListOfCustomer(person1);        }
 
     public void insertListOfCustomer(Customer person1) {
-        try ( PreparedStatement prStatement = hikariDatasource.getConnection().prepareStatement(sqlCommands.getProperty("insert.table.Customer"))) {
+        try (Connection connection = hikariDatasource.getConnection();PreparedStatement prStatement = connection.prepareStatement(sqlCommands.getProperty("insert.table.Customer"))) {
 
             prStatement.setLong(1,ThreadLocalRandom.current().nextInt(1,300));
             prStatement.setString(2,person1.getCustomerName());
@@ -356,7 +356,7 @@ public class EshopMain {
     }
 
     private void ShowOrders() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement();
              ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.Orders")) )
         {
 
@@ -396,7 +396,7 @@ public class EshopMain {
     }
 
     private void OrdersReportSec() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement();
              ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.AverageOrderCost")) )
         {
 
@@ -425,7 +425,7 @@ public class EshopMain {
     }
 
     private void OrdersReport() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement();
              ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.OrdersReport")) )
         {
 
@@ -455,7 +455,7 @@ public class EshopMain {
     }
 
     private void OrdersReportThird() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement();
              ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.AverageOrderCostGROUPBY")) )
         {
 
@@ -487,7 +487,7 @@ public class EshopMain {
     }
 
     private void OrdersReportF() {
-        try (Statement statement = hikariDatasource.getConnection().createStatement();
+        try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement();
              ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.SumOrderCostGROUPBY")) )
         {
 
