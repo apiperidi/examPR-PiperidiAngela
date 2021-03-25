@@ -54,7 +54,7 @@ public class EshopMain {
         Scanner input = new Scanner(System.in);
         ShoppingList myList = new ShoppingList();
         int userOpt = 0;
-        while (userOpt != 6) {
+        while (userOpt != 10) {
             System.out.println("");
             System.out.println("--------------------------------");
             System.out.println("------- Menu Shopping List------");
@@ -63,7 +63,11 @@ public class EshopMain {
             System.out.println("(3) Remove a Product.");
             System.out.println("(4) Checkout and Pay.");
             System.out.println("(5) Show Order.");
-            System.out.println("(6) Exit.");
+            System.out.println("(6) ShowOrderReport.");
+            System.out.println("(7) ShowOrderReport.");
+            System.out.println("(8) ShowOrderReport.");
+            System.out.println("(9) ShowOrderReport.");
+            System.out.println("(10) Exit.");
             System.out.println("--------------------------------");
             userOpt = input.nextInt();
 
@@ -84,8 +88,22 @@ public class EshopMain {
                 ShowOrder(eshop);
             }
             if (userOpt == 6) {
+                eshop.ShowOrderReport(eshop);
+            }
+            if (userOpt == 7) {
+                eshop.ShowOrderReportSec(eshop);
+            }
+            if (userOpt == 8) {
+                eshop.ShowOrderReportThird(eshop);
+            }
+            if (userOpt == 9) {
+                eshop.ShowOrderReportF(eshop);
+            }
+
+            if (userOpt == 10) {
                 eshop.stopH2Server();
             }
+
         }
 
 
@@ -371,6 +389,132 @@ public class EshopMain {
 
     }
     //**********End Show Order*********************
+
+    //**********Show Report 2*********************
+    private static void ShowOrderReportSec(EshopMain eshop) {
+        eshop.OrdersReportSec();
+    }
+
+    private void OrdersReportSec() {
+        try (Statement statement = hikariDatasource.getConnection().createStatement();
+             ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.AverageOrderCost")) )
+        {
+
+            while (rs.next()) {
+
+                loggerAng.info("Average order Cost: {} "
+                        ,
+                        rs.getDouble("AvgDiscountPrice")
+                      );
+                //  System.out.println();
+            }
+
+
+
+        } catch (SQLException throwables) {
+            loggerAng.error("Error occurred while selecting data",throwables);
+            exit(-1);
+        }
+
+    }
+    //**********End Show Report 2*********************
+
+    //**********Show Report 1*********************
+    private static void ShowOrderReport(EshopMain eshop) {
+        eshop.OrdersReport();
+    }
+
+    private void OrdersReport() {
+        try (Statement statement = hikariDatasource.getConnection().createStatement();
+             ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.OrdersReport")) )
+        {
+
+            while (rs.next()) {
+
+                loggerAng.info("Customer Name: {}  Orders: {}. "
+                        ,
+                        rs.getString("Customername"),
+                        rs.getString("count")
+                );
+                //  System.out.println();
+            }
+
+
+
+        } catch (SQLException throwables) {
+            loggerAng.error("Error occurred while selecting data",throwables);
+            exit(-1);
+        }
+
+    }
+    //**********End Show Report 1*********************
+
+    //**********Show Report 3*********************
+    private static void ShowOrderReportThird(EshopMain eshop) {
+        eshop.OrdersReportThird();
+    }
+
+    private void OrdersReportThird() {
+        try (Statement statement = hikariDatasource.getConnection().createStatement();
+             ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.AverageOrderCostGROUPBY")) )
+        {
+
+            while (rs.next()) {
+
+                loggerAng.info("Customer Name: {}  Average order by Customer: {}. "
+                        ,
+                        rs.getString("Customername"),
+                        rs.getDouble("AvgDiscountPrice")
+                );
+
+
+                //  System.out.println();
+            }
+
+
+
+        } catch (SQLException throwables) {
+            loggerAng.error("Error occurred while selecting Average order by Customer",throwables);
+            exit(-1);
+        }
+
+    }
+    //**********End Show Report 3*********************
+
+    //**********Show Report 4*********************
+    private static void ShowOrderReportF(EshopMain eshop) {
+        eshop.OrdersReportF();
+    }
+
+    private void OrdersReportF() {
+        try (Statement statement = hikariDatasource.getConnection().createStatement();
+             ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.SumOrderCostGROUPBY")) )
+        {
+
+            while (rs.next()) {
+
+
+                loggerAng.info("Customer Name: {}  SumPrice: {}. "
+                        ,
+                        rs.getString("Customername"),
+                        rs.getDouble("SumPrice")
+                );
+
+
+                //  System.out.println();
+            }
+
+
+
+        } catch (SQLException throwables) {
+            loggerAng.error("Error occurred while selecting Average order by Customer",throwables);
+            exit(-1);
+        }
+
+    }
+    //**********End Show Report 4*********************
+
+
 
  /* private void generateCustomerData (PreparedStatement prStatement, int HowMany) throws SQLException {
         CustomerCategoryEnum result = null;
