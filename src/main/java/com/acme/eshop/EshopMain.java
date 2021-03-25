@@ -290,39 +290,101 @@ public class EshopMain {
     private static void getPay(EshopMain eshop, ShoppingList myList) {
         eshop.pay(myList);
     }
+
+
+    private void SelectProductExist(List<String> ProdList)
+    { try (Connection connection = hikariDatasource.getConnection();Statement statement = connection.createStatement();
+           ResultSet rs= statement.executeQuery(sqlCommands.getProperty("select.table.DescProducts")) ) {
+            while (rs.next()) { ProdList.add(rs.getString("Description")); }
+    }
+     catch (SQLException throwables) {
+        loggerAng.error("Error occurred while selecting data",throwables);
+        exit(-1);
+    }
+    }
+
+
+
+    private  Boolean checkProductexist(ShoppingList myList)
+    {
+      //  int x=0;
+      //  int y=0;
+            List<String> ProdList = new ArrayList<String>();
+             List<String> ProdBasketList = new ArrayList<String>();
+            SelectProductExist(ProdList);
+
+        System.out.println("Are all the contents equal? "
+                + ProdList.containsAll(ProdBasketList));
+
+
+       for (int i = 0; i < myList.list.stream().count(); i++) { ProdBasketList.add(myList.displayItemName(i));}
+            boolean found = false;
+               for(String title: ProdBasketList) {
+                    System.out.println("Gia na dw Basket"+ title);
+                    for (String model : ProdList) {
+                        System.out.println("Gia na dw Database"+ model);
+                        if (title.toUpperCase().equals(model.toUpperCase())) {
+                            //System.out.println("aaa");
+                            found = true;
+                          //  x=0;
+                           break;
+                        } else {
+                            found = false;
+                            //System.out.println("bbb");
+                        //    x=1;
+                            //break;
+                        }
+
+
+                    }
+                   if (!found) {
+                      // System.out.println(y);
+                      // y+=x;
+                      // System.out.println(y);
+                       break;
+                   }
+                }
+        //System.out.println("Teliko y="+y);
+       // System.out.println("Teliko x="+x);
+       // System.out.println("Teliko found="+found);
+                return found;
+    }
+
     private void pay(ShoppingList myList )  {
             if (!myList.list.isEmpty())
            {
-               int OrderID=ThreadLocalRandom.current().nextInt(1,300);
-              String Name= generator.getFirstName();
-               String LastName= generator.getLastName();
-               Customer person1 = new Customer(Name,LastName, CustomerCategoryEnum.ask().toString(),"Cash");
-               InsertCustomer(person1,OrderID);
-               try (Connection connection = hikariDatasource.getConnection();PreparedStatement prStatement = connection.prepareStatement(sqlCommands.getProperty("insert.table.Order")))
-               {
-                   for (int i = 0; i < myList.list.stream().count(); i++) {
+              boolean Productexist=checkProductexist(myList);
+                if (Productexist) {
+                    int OrderID = ThreadLocalRandom.current().nextInt(1, 300);
+                    String Name = generator.getFirstName();
+                    String LastName = generator.getLastName();
+                    Customer person1 = new Customer(Name, LastName, CustomerCategoryEnum.ask().toString(), "Cash");
+                    InsertCustomer(person1, OrderID);
+                    try (Connection connection = hikariDatasource.getConnection(); PreparedStatement prStatement = connection.prepareStatement(sqlCommands.getProperty("insert.table.Order"))) {
+                        for (int i = 0; i < myList.list.stream().count(); i++) {
 
-                       Double dDiscountPrice=(myList.displayTotalPrice(i)* person1.getDiscount())/100;
+                            Double dDiscountPrice = (myList.displayTotalPrice(i) * person1.getDiscount()) / 100;
 
-                       prStatement.setLong(1,ThreadLocalRandom.current().nextInt(1,300));
-                       prStatement.setLong(2,OrderID);
-                       prStatement.setString(3,myList.displayItemName(i));
-                       prStatement.setString(4,person1.getCustomerLatName());
-                       prStatement.setInt(5,myList.displayQuantity(i));
-                       prStatement.setDouble(6,myList.displayTotalPrice(i));
-                       prStatement.setDouble(7,dDiscountPrice);
-                       prStatement.addBatch();
-                       prStatement.clearParameters();
+                            prStatement.setLong(1, ThreadLocalRandom.current().nextInt(1, 300));
+                            prStatement.setLong(2, OrderID);
+                            prStatement.setString(3, myList.displayItemName(i));
+                            prStatement.setString(4, person1.getCustomerLatName());
+                            prStatement.setInt(5, myList.displayQuantity(i));
+                            prStatement.setDouble(6, myList.displayTotalPrice(i));
+                            prStatement.setDouble(7, dDiscountPrice);
+                            prStatement.addBatch();
+                            prStatement.clearParameters();
 
-                   }
-                   int[] resultRows =prStatement.executeBatch();
-                   loggerAng.info("Insert statement of Order returned {}" , Arrays.stream(resultRows).sum());
-                   myList.clearList();
-               }
-               catch (SQLException throwables) {
-                   loggerAng.error("Error occurred while inserting Order",throwables);
-                   exit(-1);
-               }
+                        }
+                        int[] resultRows = prStatement.executeBatch();
+                        loggerAng.info("Insert statement of Order returned {}", Arrays.stream(resultRows).sum());
+                        myList.clearList();
+                    } catch (SQLException throwables) {
+                        loggerAng.error("Error occurred while inserting Order", throwables);
+                        exit(-1);
+                    }
+                }
+                else { loggerAng.info("The product you selected does not exist in the catalog. Please Remove it from your Basket List.");}
            }
             else{ loggerAng.info("Your Basket is empty. Please add products");}
             }
