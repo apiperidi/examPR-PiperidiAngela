@@ -7,7 +7,7 @@ import static java.lang.System.exit;
 
 public class Product {
 
-    private Integer ID;
+    /*private Integer ID;
     private String Code;
     private String Description;
     private Integer Quantity;
@@ -52,7 +52,7 @@ public class Product {
         Price = price;
     }
 
-    private double Price;
+    private double Price;*/
 
 
    /* public Product(final Integer ID, final String Code, final String Description,final Integer Quantity,final double Price) {
