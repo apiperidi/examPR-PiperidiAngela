@@ -59,14 +59,14 @@ public class EshopMain {
             System.out.println("--------------------------------");
             System.out.println("------- Menu Shopping List------");
             System.out.println("(1) Add a Product to the list. ");
-            System.out.println("(2) Display Order list and total number of items. ");
-            System.out.println("(3) Remove a Product.");
-            System.out.println("(4) Checkout and Pay.");
-            System.out.println("(5) Show Order.");
-            System.out.println("(6) ShowOrderReport.");
-            System.out.println("(7) ShowOrderReport.");
-            System.out.println("(8) ShowOrderReport.");
-            System.out.println("(9) ShowOrderReport.");
+            System.out.println("(2) Display My Basket and total number of items. ");
+            System.out.println("(3) Remove a Product from My Basket.");
+            System.out.println("(4) Customer Checkout and Pay.");
+            System.out.println("(5) Admin eshop Show Orders.");
+            System.out.println("(6) Admin ShowOrderReport 1.");
+            System.out.println("(7) Admin ShowOrderReport 2.");
+            System.out.println("(8) Admin ShowOrderReport 3.");
+            System.out.println("(9) Admin ShowOrderReport 4.");
             System.out.println("(10) Exit.");
             System.out.println("--------------------------------");
             userOpt = input.nextInt();
@@ -88,16 +88,16 @@ public class EshopMain {
                 ShowOrder(eshop);
             }
             if (userOpt == 6) {
-                eshop.ShowOrderReport(eshop);
+                ShowOrderReport(eshop);
             }
             if (userOpt == 7) {
-                eshop.ShowOrderReportSec(eshop);
+                ShowOrderReportSec(eshop);
             }
             if (userOpt == 8) {
-                eshop.ShowOrderReportThird(eshop);
+               ShowOrderReportThird(eshop);
             }
             if (userOpt == 9) {
-                eshop.ShowOrderReportF(eshop);
+               ShowOrderReportF(eshop);
             }
 
             if (userOpt == 10) {
@@ -221,7 +221,7 @@ public class EshopMain {
             prStatement.clearParameters();
             prStatement.setLong(1, 1 + i);
             prStatement.setString(2, generator.getZipCode());
-            prStatement.setString(3, "ProductName"+i);
+            prStatement.setString(3, "Prd"+i);
             prStatement.setInt(4, ThreadLocalRandom.current().nextInt(1,30));
 
            // double price = ThreadLocalRandom.current().nextInt(10 * 10, 100 * (10000 + 1)) / 100d;
@@ -293,10 +293,11 @@ public class EshopMain {
     private void pay(ShoppingList myList )  {
             if (!myList.list.isEmpty())
            {
+               int OrderID=ThreadLocalRandom.current().nextInt(1,300);
               String Name= generator.getFirstName();
                String LastName= generator.getLastName();
                Customer person1 = new Customer(Name,LastName, CustomerCategoryEnum.ask().toString(),"Cash");
-               InsertCustomer(person1);
+               InsertCustomer(person1,OrderID);
                try (Connection connection = hikariDatasource.getConnection();PreparedStatement prStatement = connection.prepareStatement(sqlCommands.getProperty("insert.table.Order")))
                {
                    for (int i = 0; i < myList.list.stream().count(); i++) {
@@ -304,11 +305,12 @@ public class EshopMain {
                        Double dDiscountPrice=(myList.displayTotalPrice(i)* person1.getDiscount())/100;
 
                        prStatement.setLong(1,ThreadLocalRandom.current().nextInt(1,300));
-                       prStatement.setString(2,myList.displayItemName(i));
-                       prStatement.setString(3,person1.getCustomerLatName());
-                       prStatement.setInt(4,myList.displayQuantity(i));
-                       prStatement.setDouble(5,myList.displayTotalPrice(i));
-                       prStatement.setDouble(6,dDiscountPrice);
+                       prStatement.setLong(2,OrderID);
+                       prStatement.setString(3,myList.displayItemName(i));
+                       prStatement.setString(4,person1.getCustomerLatName());
+                       prStatement.setInt(5,myList.displayQuantity(i));
+                       prStatement.setDouble(6,myList.displayTotalPrice(i));
+                       prStatement.setDouble(7,dDiscountPrice);
                        prStatement.addBatch();
                        prStatement.clearParameters();
 
@@ -322,20 +324,21 @@ public class EshopMain {
                    exit(-1);
                }
            }
+            else{ loggerAng.info("Your Basket is empty. Please add products");}
+            }
 
-    }
+    private void InsertCustomer(Customer person1,Integer OrderID) {
+        insertListOfCustomer(person1,OrderID);        }
 
-    private void InsertCustomer(Customer person1) {
-        insertListOfCustomer(person1);        }
-
-    public void insertListOfCustomer(Customer person1) {
+    public void insertListOfCustomer(Customer person1,Integer OrderID) {
         try (Connection connection = hikariDatasource.getConnection();PreparedStatement prStatement = connection.prepareStatement(sqlCommands.getProperty("insert.table.Customer"))) {
 
             prStatement.setLong(1,ThreadLocalRandom.current().nextInt(1,300));
-            prStatement.setString(2,person1.getCustomerName());
-            prStatement.setString(3,person1.getCustomerLatName());
-            prStatement.setInt(4,person1.getDiscountCategory());
-            prStatement.setString(5,person1.getCustomerCategory());
+            prStatement.setLong(2,OrderID);
+            prStatement.setString(3,person1.getCustomerName());
+            prStatement.setString(4,person1.getCustomerLatName());
+            prStatement.setInt(5,person1.getDiscountCategory());
+            prStatement.setString(6,person1.getCustomerCategory());
             prStatement.addBatch();
             prStatement.clearParameters();
 
@@ -362,13 +365,14 @@ public class EshopMain {
 
                 while (rs.next()) {
 
-                    loggerAng.info("Customer Name: {} {} Customer Category: {}. " +
+                    loggerAng.info("Order Code: {} - Customer Name: {} {} Customer Category: {}. " +
                                     "Customer Discount By Category : {}. " +
                                     "Product Description: {}. " +
                                     "Product Quantity: {}. " +
                                     "Product Price Before Discount:{} € " +
                                     "Product Price After Discount:{} € "
                             ,
+                            rs.getLong("OrderID"),
                             rs.getString("LastName"),
                             rs.getString("Name"),
                             rs.getString("CustomerCategory"),
@@ -431,10 +435,11 @@ public class EshopMain {
 
             while (rs.next()) {
 
-                loggerAng.info("Customer Name: {}  Orders: {}. "
+                loggerAng.info("Customer Name: {}  Number of Orders: {} Τhe orders had {} Products"
                         ,
                         rs.getString("Customername"),
-                        rs.getString("count")
+                        rs.getString("NumofOrders"),
+                        rs.getString("NumofProcucts")
                 );
                 //  System.out.println();
             }

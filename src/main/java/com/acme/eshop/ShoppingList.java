@@ -20,7 +20,7 @@ public class ShoppingList {
     public void addItem()
     {
         System.out.println();
-        System.out.println("Please enter in the name of your Product (Product1-10)");
+        System.out.println("Please enter in the name of your Product (Prd1-10)");
         Scanner keyboard = new Scanner(System.in);
         String ItemName = keyboard.nextLine();
 
